@@ -9,12 +9,20 @@ import (
 const beginNotWords string = `^\W+`
 const endNotWords string = `\W+$`
 
+/*
+    To replace substrings matched with the provided regular expression with another substring
+*/
 func replace(regex, replaceWith string, s *string) {
     r := regexp.MustCompile(regex)
 
     *s = r.ReplaceAllString(*s, replaceWith)
 }
 
+/*
+    Removes consecutive duplicate letters from a string retaining only
+    a single occurrence of that letter
+    Since Golang does not have lookahead regular expressions
+*/
 func removeDuplicates(word string) string {
     var last rune
 
@@ -25,10 +33,14 @@ func removeDuplicates(word string) string {
             return r
         }
 
+        // Negative value discards the letter
         return -1
     }, word)
 }
 
+/*
+    Convert the regular word to an ERMAHGERD lexicon
+*/
 func parse(word string) string {
     // Word is too short to translate
     if len(word) < 2 {
@@ -118,9 +130,12 @@ func parse(word string) string {
     return word
 }
 
+/*
+    Public function that will convert the provided sentence to an
+    ERMAHGERD lexicon
+*/
 func Gert(sentence string) string {
     var translatedWords []string
-
     prefix := regexp.MustCompile(beginNotWords)
     suffix := regexp.MustCompile(endNotWords)
 
@@ -135,6 +150,8 @@ func Gert(sentence string) string {
         replace(endNotWords, "", &word)
 
         if len(word) > 0 {
+            // Ensure that we do not lose out on any non alphabet character
+            // (exclamation, question marks etc)
             beginString := prefix.FindAllString(wordCopy, 1)
             endString := suffix.FindAllString(wordCopy, 1)
 
